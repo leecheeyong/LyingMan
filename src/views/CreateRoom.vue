@@ -1,0 +1,127 @@
+<template>
+  <div
+    class="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center p-4"
+  >
+    <div class="max-w-md w-full space-y-8">
+      <div class="text-center">
+        <router-link
+          to="/"
+          class="inline-flex items-center text-primary-600 hover:text-primary-700 mb-4"
+        >
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Home
+        </router-link>
+        <h1 class="text-3xl font-bold text-gray-900">Create Room</h1>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <form @submit.prevent="createRoom" class="space-y-6">
+          <div>
+            <label
+              for="hostName"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Your Name
+            </label>
+            <input
+              id="hostName"
+              v-model="hostName"
+              type="text"
+              required
+              maxlength="20"
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              placeholder="Enter your name..."
+              :disabled="loading"
+            />
+          </div>
+
+          <button
+            type="submit"
+            :disabled="loading || !isValidName"
+            class="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-gray-900 font-semibold py-4 px-6 rounded-xl transition-colors duration-200"
+          >
+            <span v-if="loading" class="flex items-center justify-center">
+              <svg
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-900"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Creating Room...
+            </span>
+            <span v-else>Create Room</span>
+          </button>
+        </form>
+
+        <div
+          v-if="error"
+          class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl"
+        >
+          <p class="text-red-600 text-sm">{{ error }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { gameService } from "../gameService.js";
+import { validatePlayerName } from "../gameUtils.js";
+
+const router = useRouter();
+
+const hostName = ref("");
+const loading = ref(false);
+const error = ref("");
+
+const isValidName = computed(() => {
+  return validatePlayerName(hostName.value);
+});
+
+const createRoom = async () => {
+  if (!isValidName.value) {
+    error.value = "Name must be between 2 and 20 characters";
+    return;
+  }
+
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const { roomCode } = await gameService.createRoom(hostName.value.trim());
+    router.push(`/room/${roomCode}`);
+  } catch (err) {
+    error.value = err.message || "Failed to create room. Please try again.";
+  } finally {
+    loading.value = false;
+  }
+};
+</script>
