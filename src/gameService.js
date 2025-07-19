@@ -125,7 +125,7 @@ export class GameService {
     this.stopListening(roomCode);
   }
 
-  async startGame(roomCode) {
+  async startGame(roomCode, starterId) {
     const wordPairs = [
       ["apple", "orange"],
       ["mom", "girlfriend"],
@@ -159,6 +159,15 @@ export class GameService {
       votes: {},
       timerStartedAt: Date.now(),
       wordPair: pair,
+    });
+    // System message: who started the game
+    const starterName = room.players[starterId]?.name || starterId;
+    const chatRef = ref(database, `rooms/${roomCode}/chat`);
+    await push(chatRef, {
+      name: "System",
+      text: `${starterName} started the game`,
+      timestamp: Date.now(),
+      playerId: "system",
     });
   }
 
