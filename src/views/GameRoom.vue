@@ -495,7 +495,7 @@ async function sendMessage() {
 
 async function startGame() {
   try {
-    await gameService.startGame(roomCode.value);
+    await gameService.startGame(roomCode.value, gameService.getCurrentPlayer());
   } catch (e) {
     error.value = e.message || "Failed to start game.";
     console.error("Failed to start game:", e);
