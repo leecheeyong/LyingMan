@@ -228,7 +228,7 @@
               <input
                 v-model="chatInput"
                 :disabled="
-                  !canChat || hasSentMessage || gameState.status === 'voting'
+                  !canChat || hasSentMessage || gameState.status === 'voting' || isEliminated
                 "
                 class="flex-1 px-3 py-2 rounded-xl border border-gray-300"
                 placeholder="Type your message..."
@@ -239,7 +239,7 @@
                   !canChat ||
                   !chatInput.trim() ||
                   hasSentMessage ||
-                  gameState.status === 'voting'
+                  gameState.status === 'voting' || isEliminated
                 "
                 class="bg-primary-600 hover:bg-primary-700 text-gray-900 font-semibold px-4 py-2 rounded-xl"
               >
@@ -278,6 +278,15 @@
       <div v-if="winnerMessage" class="bg-white rounded-2xl shadow-xl p-6 mt-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Game Over</h2>
         <p class="text-gray-800">{{ winnerMessage }}</p>
+      </div>
+
+      <div
+        v-if="isEliminated"
+        class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center"
+      >
+        <p class="text-yellow-800 font-semibold">
+          You have been eliminated. You can watch the rest of the game!
+        </p>
       </div>
     </div>
   </div>
@@ -395,12 +404,13 @@ let timerInterval = null;
 const chatMessages = ref([]);
 let chatUnsubscribe = ref(null);
 const chatInput = ref("");
+const isEliminated = ref(false);
 const isAlive = computed(() => {
   const playerId = gameService.getCurrentPlayer();
-  return players.value.some((p) => p.id === playerId);
+  return players.value.some((p) => p.id === playerId) && !isEliminated.value;
 });
 const canChat = computed(
-  () => gameState.value.status === "describing" && isAlive.value,
+  () => gameState.value.status === "describing" && isAlive.value && !isEliminated.value,
 );
 const hasVoted = ref(false);
 const hasSentMessage = ref(false);
@@ -482,6 +492,15 @@ watch(
   { immediate: true },
 );
 
+watch(roomData, (newRoomData) => {
+  const playerId = gameService.getCurrentPlayer();
+  if (newRoomData && newRoomData.players && !newRoomData.players[playerId]) {
+    isEliminated.value = true;
+  } else {
+    isEliminated.value = false;
+  }
+});
+
 async function sendMessage() {
   if (!chatInput.value.trim()) return;
   try {
@@ -516,12 +535,5 @@ const currentPlayerName = computed(() => {
   const playerId = gameService.getCurrentPlayer();
   const player = players.value.find((p) => p.id === playerId);
   return player ? player.name : "";
-});
-
-watch(roomData, (newRoomData) => {
-  const playerId = gameService.getCurrentPlayer();
-  if (newRoomData && newRoomData.players && !newRoomData.players[playerId]) {
-    router.push("/");
-  }
 });
 </script>
