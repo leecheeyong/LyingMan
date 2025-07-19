@@ -5,12 +5,11 @@
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-2xl font-bold text-gray-900">
-              Room {{ roomCode }}
+              Room {{ roomCode
+              }}<span v-if="currentPlayerName"> - {{ currentPlayerName }}</span>
             </h1>
             <p class="text-gray-600">
-              {{ players.length }} player{{
-                players.length !== 1 ? "s" : ""
-              }}
+              {{ players.length }} player{{ players.length !== 1 ? "s" : "" }}
               connected
             </p>
           </div>
@@ -282,6 +281,27 @@
       </div>
     </div>
   </div>
+  <footer class="py-8 text-center text-gray-500 text-sm">
+    <p>
+      Made with <span class="text-red-500">❤️</span> by
+      <a
+        href="https://github.com/leecheeyong"
+        target="_blank"
+        class="text-gray-700 hover:underline"
+      >
+        Chee Yong Lee
+      </a>
+    </p>
+    <p class="mt-1">
+      Project available as open source under the terms of
+      <a
+        href="https://github.com/leecheeyong/lyingman/blob/main/LICENSE"
+        target="_blank"
+        class="text-gray-700 hover:underline"
+        >MIT License</a
+      >
+    </p>
+  </footer>
 </template>
 
 <script setup>
@@ -292,7 +312,7 @@ import { gameService } from "../gameService.js";
 const router = useRouter();
 const route = useRoute();
 
-const roomCode = ref(route.params.code);
+const roomCode = computed(() => route.params.code);
 const roomData = ref(null);
 const error = ref("");
 const unsubscribe = ref(null);
@@ -350,6 +370,7 @@ const winnerMessage = computed(() => {
 });
 
 const setupRoomListener = () => {
+  if (unsubscribe.value) unsubscribe.value();
   unsubscribe.value = gameService.listenToRoom(roomCode.value, (data) => {
     roomData.value = data;
     error.value = "";
@@ -361,6 +382,10 @@ const leaveRoom = async () => {
   if (currentPlayer) {
     await gameService.leaveRoom(roomCode.value, currentPlayer);
   }
+  if (unsubscribe.value) unsubscribe.value();
+  if (chatUnsubscribe.value) chatUnsubscribe.value();
+  roomData.value = null;
+  error.value = "";
   router.push("/");
 };
 
@@ -368,7 +393,7 @@ const timer = ref(60);
 let timerInterval = null;
 
 const chatMessages = ref([]);
-let chatUnsubscribe = null;
+let chatUnsubscribe = ref(null);
 const chatInput = ref("");
 const isAlive = computed(() => {
   const playerId = gameService.getCurrentPlayer();
@@ -381,9 +406,9 @@ const hasVoted = ref(false);
 const hasSentMessage = ref(false);
 
 function setupChatListener() {
-  if (chatUnsubscribe) chatUnsubscribe();
+  if (chatUnsubscribe.value) chatUnsubscribe.value();
   const chatRef = gameService.getChatRef(roomCode.value);
-  chatUnsubscribe = gameService.listenToChat(chatRef, (messages) => {
+  chatUnsubscribe.value = gameService.listenToChat(chatRef, (messages) => {
     chatMessages.value = messages;
   });
 }
@@ -399,11 +424,9 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  if (unsubscribe.value) {
-    gameService.stopListening(roomCode.value);
-  }
+  if (unsubscribe.value) unsubscribe.value();
   if (timerInterval) clearInterval(timerInterval);
-  if (chatUnsubscribe) chatUnsubscribe();
+  if (chatUnsubscribe.value) chatUnsubscribe.value();
 });
 
 function startTimer() {
@@ -427,6 +450,38 @@ watch(gameState, (newState, oldState) => {
     if (timerInterval) clearInterval(timerInterval);
   }
 });
+
+watch(
+  () => route.params.code,
+  (newCode) => {
+    if (newCode && newCode !== roomCode.value) {
+      roomCode.value = newCode;
+    }
+  },
+);
+
+watch(
+  () => roomCode.value,
+  async (newCode, oldCode) => {
+    if (unsubscribe.value) unsubscribe.value();
+    if (chatUnsubscribe.value) chatUnsubscribe.value();
+    // Reset all relevant state when switching rooms
+    roomData.value = null;
+    chatMessages.value = [];
+    chatInput.value = "";
+    hasVoted.value = false;
+    hasSentMessage.value = false;
+    timer.value = 60;
+    try {
+      await gameService.getRoomData(newCode);
+      setupRoomListener();
+      setupChatListener();
+    } catch (err) {
+      error.value = err.message || "Room not found";
+    }
+  },
+  { immediate: true },
+);
 
 async function sendMessage() {
   if (!chatInput.value.trim()) return;
@@ -457,4 +512,18 @@ const voteForPlayer = async (playerId) => {
     console.error("Failed to vote:", e);
   }
 };
+
+const currentPlayerName = computed(() => {
+  const playerId = gameService.getCurrentPlayer();
+  const player = players.value.find((p) => p.id === playerId);
+  return player ? player.name : "";
+});
+
+watch(roomData, (newRoomData) => {
+  const playerId = gameService.getCurrentPlayer();
+  if (newRoomData && newRoomData.players && !newRoomData.players[playerId]) {
+    // Player is no longer in the room (disconnected or removed)
+    router.push("/");
+  }
+});
 </script>

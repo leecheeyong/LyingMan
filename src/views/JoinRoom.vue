@@ -108,6 +108,27 @@
       </div>
     </div>
   </div>
+  <footer class="py-8 text-center text-gray-500 text-sm">
+    <p>
+      Made with <span class="text-red-500">❤️</span> by
+      <a
+        href="https://github.com/leecheeyong"
+        target="_blank"
+        class="text-gray-700 hover:underline"
+      >
+        Chee Yong Lee
+      </a>
+    </p>
+    <p class="mt-1">
+      Project available as open source under the terms of
+      <a
+        href="https://github.com/leecheeyong/lyingman/blob/main/LICENSE"
+        target="_blank"
+        class="text-gray-700 hover:underline"
+        >MIT License</a
+      >
+    </p>
+  </footer>
 </template>
 
 <script setup>

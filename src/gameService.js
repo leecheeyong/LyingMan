@@ -7,6 +7,7 @@ import {
   onValue,
   off,
   serverTimestamp,
+  onDisconnect,
 } from "firebase/database";
 import { generateRoomCode, generatePlayerId } from "./gameUtils.js";
 
@@ -68,6 +69,8 @@ export class GameService {
       isHost: false,
       joinedAt: serverTimestamp(),
     });
+    // Remove player on disconnect (modular syntax)
+    await onDisconnect(playerRef).remove();
 
     this.currentRoom = roomCode;
     this.currentPlayer = playerId;
@@ -296,12 +299,47 @@ export class GameService {
     });
     let eliminatedId = null;
     let maxVotes = 0;
+    let maxVotedIds = [];
     Object.entries(tally).forEach(([id, count]) => {
       if (count > maxVotes) {
         maxVotes = count;
-        eliminatedId = id;
+        maxVotedIds = [id];
+      } else if (count === maxVotes) {
+        maxVotedIds.push(id);
       }
     });
+    // If draw, no one is eliminated
+    if (maxVotedIds.length > 1) {
+      await push(chatRef, {
+        name: "System",
+        text: `The vote was a draw. No one was eliminated!`,
+        timestamp: Date.now(),
+        playerId: "system",
+      });
+      // Next round: keep same roles for alive players, increment round, reset votes and described
+      const alivePlayers = Object.keys(room.players);
+      const newRoles = {};
+      alivePlayers.forEach((id) => {
+        newRoles[id] = gameState.roles[id];
+      });
+      await set(gameStateRef, {
+        status: "describing",
+        round: (gameState.round || 0) + 1,
+        roles: newRoles,
+        votes: {},
+        described: {},
+        timerStartedAt: Date.now(),
+        wordPair: gameState.wordPair,
+      });
+      await push(chatRef, {
+        name: "System",
+        text: `Round ${(gameState.round || 0) + 1} begins! Describe your word again.`,
+        timestamp: Date.now(),
+        playerId: "system",
+      });
+      return;
+    }
+    eliminatedId = maxVotedIds[0];
     let updatedRoom = room;
     if (eliminatedId) {
       await set(
