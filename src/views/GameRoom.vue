@@ -228,7 +228,10 @@
               <input
                 v-model="chatInput"
                 :disabled="
-                  !canChat || hasSentMessage || gameState.status === 'voting' || isEliminated
+                  !canChat ||
+                  hasSentMessage ||
+                  gameState.status === 'voting' ||
+                  isEliminated
                 "
                 class="flex-1 px-3 py-2 rounded-xl border border-gray-300"
                 placeholder="Type your message..."
@@ -239,7 +242,8 @@
                   !canChat ||
                   !chatInput.trim() ||
                   hasSentMessage ||
-                  gameState.status === 'voting' || isEliminated
+                  gameState.status === 'voting' ||
+                  isEliminated
                 "
                 class="bg-primary-600 hover:bg-primary-700 text-gray-900 font-semibold px-4 py-2 rounded-xl"
               >
@@ -410,7 +414,10 @@ const isAlive = computed(() => {
   return players.value.some((p) => p.id === playerId) && !isEliminated.value;
 });
 const canChat = computed(
-  () => gameState.value.status === "describing" && isAlive.value && !isEliminated.value,
+  () =>
+    gameState.value.status === "describing" &&
+    isAlive.value &&
+    !isEliminated.value,
 );
 const hasVoted = ref(false);
 const hasSentMessage = ref(false);
