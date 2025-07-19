@@ -1,3 +1,5 @@
+<img src="./public/logo-white.png" width="150">
+
 # [LyingMan](https://lyingman.vercel.app)
 
 LyingMan is a real-time social deduction game. Players join a room, receive secret words, and try to identify the imposter among them through clever descriptions and voting.
