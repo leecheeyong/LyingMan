@@ -69,7 +69,6 @@ export class GameService {
       isHost: false,
       joinedAt: serverTimestamp(),
     });
-    // Remove player on disconnect (modular syntax)
     await onDisconnect(playerRef).remove();
 
     this.currentRoom = roomCode;
@@ -217,7 +216,6 @@ export class GameService {
       timerStartedAt: Date.now(),
       wordPair: pair,
     });
-    // System message: who started the game
     const starterName = room.players[starterId]?.name || starterId;
     const chatRef = ref(database, `rooms/${roomCode}/chat`);
     await push(chatRef, {
@@ -374,7 +372,6 @@ export class GameService {
         maxVotedIds.push(id);
       }
     });
-    // If draw, no one is eliminated
     if (maxVotedIds.length > 1) {
       await push(chatRef, {
         name: "System",
@@ -382,7 +379,6 @@ export class GameService {
         timestamp: Date.now(),
         playerId: "system",
       });
-      // Next round: keep same roles for alive players, increment round, reset votes and described
       const alivePlayers = Object.keys(room.players);
       const newRoles = {};
       alivePlayers.forEach((id) => {
