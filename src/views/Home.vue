@@ -8,10 +8,16 @@
         <p class="text-lg text-gray-600">The Ultimate Party Game</p>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        <div class="bg-white/80 border border-gray-200 ring-1 ring-gray-100 hover:shadow-2xl transition-shadow rounded-2xl shadow-xl p-8 space-y-6 backdrop-blur-sm min-h-[420px] flex flex-col justify-center">
+        <div
+          class="bg-white/80 border border-gray-200 ring-1 ring-gray-100 hover:shadow-2xl transition-shadow rounded-2xl shadow-xl p-8 space-y-6 backdrop-blur-sm min-h-[420px] flex flex-col justify-center"
+        >
           <div class="text-center">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Get Started</h2>
-            <p class="text-gray-600">Create a new room or join an existing one</p>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+              Get Started
+            </h2>
+            <p class="text-gray-600">
+              Create a new room or join an existing one
+            </p>
           </div>
           <div class="space-y-4">
             <router-link
@@ -54,15 +60,30 @@
             </router-link>
           </div>
         </div>
-        <section class="bg-white/80 border border-gray-200 ring-1 ring-gray-100 hover:shadow-2xl transition-shadow rounded-2xl shadow-xl p-8 min-h-[420px] flex flex-col justify-center backdrop-blur-sm lg:mt-0 mt-8 text-center">
+        <section
+          class="bg-white/80 border border-gray-200 ring-1 ring-gray-100 hover:shadow-2xl transition-shadow rounded-2xl shadow-xl p-8 min-h-[420px] flex flex-col justify-center backdrop-blur-sm lg:mt-0 mt-8 text-center"
+        >
           <h2 class="text-2xl font-semibold text-gray-900 mb-3">How to Play</h2>
-          <ol class="list-decimal list-inside text-gray-700 space-y-2 text-base mx-auto max-w-xs text-left">
+          <ol
+            class="list-decimal list-inside text-gray-700 space-y-2 text-base mx-auto max-w-xs text-left"
+          >
             <li>Join a room with at least 4 players.</li>
-            <li>Each player receives a secret word. One player is the imposter with a different word.</li>
+            <li>
+              Each player receives a secret word. One player is the imposter
+              with a different word.
+            </li>
             <li>Take turns describing your word in the chat—be subtle!</li>
-            <li>After everyone describes, vote for who you think is the imposter.</li>
-            <li>If the imposter is caught, the others win. If not, the game continues!</li>
-            <li>Try to blend in if you're the imposter, or catch the imposter if you're not!</li>
+            <li>
+              After everyone describes, vote for who you think is the imposter.
+            </li>
+            <li>
+              If the imposter is caught, the others win. If not, the game
+              continues!
+            </li>
+            <li>
+              Try to blend in if you're the imposter, or catch the imposter if
+              you're not!
+            </li>
           </ol>
         </section>
       </div>

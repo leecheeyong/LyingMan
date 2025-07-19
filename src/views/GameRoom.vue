@@ -465,7 +465,6 @@ watch(
   async (newCode, oldCode) => {
     if (unsubscribe.value) unsubscribe.value();
     if (chatUnsubscribe.value) chatUnsubscribe.value();
-    // Reset all relevant state when switching rooms
     roomData.value = null;
     chatMessages.value = [];
     chatInput.value = "";
@@ -522,7 +521,6 @@ const currentPlayerName = computed(() => {
 watch(roomData, (newRoomData) => {
   const playerId = gameService.getCurrentPlayer();
   if (newRoomData && newRoomData.players && !newRoomData.players[playerId]) {
-    // Player is no longer in the room (disconnected or removed)
     router.push("/");
   }
 });
