@@ -34,8 +34,8 @@ LyingMan is a real-time social deduction game. Players join a room, receive secr
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/leecheeyong/lyingman.git
-   cd laterboard
+   git clone https://github.com/leecheeyong/LyingMan.git
+   cd LyingMan
    ```
 2. **Install dependencies:**
    ```bash
