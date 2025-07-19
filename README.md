@@ -2,11 +2,14 @@
 
 # [LyingMan](https://lyingman.vercel.app)
 
-LyingMan is a real-time social deduction game. Players join a room, receive secret words, and try to identify the imposter among them through clever descriptions and voting.
+LyingMan is a real-time social deduction game made possible with firebase realtime. Players join a room, receive secret words, and try to identify the imposter among them through clever descriptions and voting.
 
 ## Demo
 
 <video src="https://github.com/user-attachments/assets/7209f167-245e-4a92-af77-e7ac9a1e9fed"></video>
+
+## About
+LyingMan (卧底) is a game my friends and I used to play back in school — thinking about it always brings back great memories of laughter and clever guesses. It wasn’t just a game; it was part of what made our school days so special, a simple joy that brought us closer together.
 
 ## Features
 
