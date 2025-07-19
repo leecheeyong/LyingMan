@@ -5,7 +5,8 @@
 LyingMan is a real-time social deduction game. Players join a room, receive secret words, and try to identify the imposter among them through clever descriptions and voting.
 
 ## Demo
-https://github.com/user-attachments/assets/7209f167-245e-4a92-af77-e7ac9a1e9fed
+
+<video src="https://github.com/user-attachments/assets/7209f167-245e-4a92-af77-e7ac9a1e9fed"></video>
 
 ## Features
 
